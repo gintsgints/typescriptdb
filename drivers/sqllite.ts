@@ -2,9 +2,9 @@
 
 class Migration extends MigrationBase {
    CreateTable(Model) {
-       console.log('Creating oracle table');
+       console.log('Creating sqlite table');
    };
    DropTable(string) {
-       console.log('Dropping oracle table');       
+       console.log('Dropping sqlite table');       
    };
 }
