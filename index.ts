@@ -1,6 +1,6 @@
 ﻿export enum FIELD_TYPE {string, number, datetime, text}
 
-interface Field {
+export interface Field {
 pk?: boolean;
 name: string;
 type: FIELD_TYPE;
