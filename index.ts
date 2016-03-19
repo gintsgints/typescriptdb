@@ -5,7 +5,7 @@ pk?: boolean;
 name: string;
 type: FIELD_TYPE;
 caption?: string;
-size: number;
+size?: number;
 decimal?: number;
 default?: string;
 null?: boolean;
