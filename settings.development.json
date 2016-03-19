@@ -1,0 +1,4 @@
+﻿{
+  "connection": "./sqlite3.db",
+  "transformations": "./built/example"
+}

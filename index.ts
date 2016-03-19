@@ -1,30 +1,29 @@
-﻿// --- Model definitions
-
-enum FIELD_TYPE {string, number, datetime, text}
+﻿export enum FIELD_TYPE {string, number, datetime, text}
 
 interface Field {
-  pk?: boolean;
-  name: string;
-  type: FIELD_TYPE;
-  caption?: string;
-  size: number;
-  decimal?: number;
-  default?: string;
-  null?: boolean;
-  index?: boolean;
+pk?: boolean;
+name: string;
+type: FIELD_TYPE;
+caption?: string;
+size: number;
+decimal?: number;
+default?: string;
+null?: boolean;
+index?: boolean;
 }
 
-interface Model {
-  tableName: string;
-  fields: Array<Field>;
+export class Model {
+    tableName: string;
+    fields: Array<Field>;
 }
 
 // --- Migration definitions
-class MigrationBase {
-   Up() {
-       
-   };
-   Down() {
-       
-   };
+export class MigrationBase {
+Up() {
+    
+};
+Down() {
+    
+};
 }
+

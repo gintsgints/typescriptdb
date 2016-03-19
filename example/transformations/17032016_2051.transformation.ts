@@ -1,10 +1,13 @@
-/// <reference path="../item.ts"/>
+import {Migration} from '../../drivers/sqllite';
+import {item} from '../item';
 
-class CreateItemTable extends Migration {
-    Up() {
-        this.CreateTable(item);    
+export module MigrationModule {
+    export class Migrate extends Migration {
+        Up() {
+            this.CreateTable(item);    
+        }
+        Down() {
+            this.DropTable(item);
+        }    
     }
-    Down() {
-        this.DropTable(item.tableName);
-    }    
 }

@@ -1,0 +1,29 @@
+{
+  "name": "typescriptdb",
+  "version": "0.0.1",
+  "description": "Database backend for node, powered by typescript.",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gintsgints/typescriptdb.git"
+  },
+  "keywords": [
+    "nodejs",
+    "typescript",
+    "persistence",
+    "migration",
+    "tool"
+  ],
+  "author": "'Gints <'polis.gints@gmail.com'>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/gintsgints/typescriptdb/issues"
+  },
+  "homepage": "https://github.com/gintsgints/typescriptdb#readme"
+}
