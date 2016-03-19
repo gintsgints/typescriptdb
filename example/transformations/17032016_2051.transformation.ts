@@ -1,4 +1,4 @@
-import {Migration} from '../../drivers/sqllite';
+import {Migration} from '../../drivers/sqlite';
 import {item} from '../item';
 
 export module MigrationModule {

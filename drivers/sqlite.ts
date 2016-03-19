@@ -30,7 +30,7 @@ class SQLLiteModel {
         }
         return result;
     }
-     
+    
     SQLField(field: Field): string {
         return field.name + ' ' + SQLLiteModel.prototype.SQLType(field.type);
     }
@@ -57,6 +57,14 @@ export class Migration extends MigrationBase {
         var liteModel = new SQLLiteModel(model);
         console.log();
         sql = "CREATE TABLE " + model.tableName + " (";
+        sql = sql + liteModel.SQLFields();
+        this.db.run(sql + " )");
+    };
+    CreateTableIgnore(model: Model) {
+        var sql: string;
+        var liteModel = new SQLLiteModel(model);
+        console.log();
+        sql = "CREATE TABLE IF NOT EXISTS " + model.tableName + " (";
         sql = sql + liteModel.SQLFields();
         this.db.run(sql + " )");
     };

@@ -1,5 +1,6 @@
 var fs = require('fs');
 var path = require('path');
+import {schema_version} from './schema_version';
 
 var settings = require('../../settings.' + process.env.NODE_ENV + '.json');
 
@@ -38,6 +39,12 @@ walk(settings.transformations, function(err, results) {
 // End of looping trough all files for .transformation
 
 function domigrate(paths: Array<string>) {
+    // Check version table
+    var driverModule = require('../drivers/' + settings.driver);
+    var schemaVerMigr = new driverModule.Migration();
+    schemaVerMigr.CreateTableIgnore(schema_version);    
+
+    // Apply migrations
     paths.forEach(function(file) {
         migrate(file);
     });
