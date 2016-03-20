@@ -44,7 +44,7 @@ class SQLLiteModel {
     }
 }
 
-export class Migration extends MigrationBase {
+export class MigrationImpl extends MigrationBase {
     db: Database;
     
     constructor() {

@@ -1,4 +1,6 @@
-﻿export enum FIELD_TYPE {string, number, datetime, text}
+﻿var settings = require('../settings.' + process.env.NODE_ENV + '.json');
+
+export enum FIELD_TYPE {string, number, datetime, text}
 
 export interface Field {
 pk?: boolean;
@@ -19,11 +21,13 @@ export class Model {
 
 // --- Migration definitions
 export class MigrationBase {
-Up() {
-    
-};
-Down() {
-    
-};
+    Up() {
+        
+    };
+    Down() {
+        
+    };
 }
+
+export var Migration = require('./drivers/' + settings.driver).MigrationImpl;
 

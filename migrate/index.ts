@@ -40,9 +40,9 @@ walk(settings.transformations, function(err, results) {
 
 function domigrate(paths: Array<string>) {
     // Check version table
-    var driverModule = require('../drivers/' + settings.driver);
-    var schemaVerMigr = new driverModule.Migration();
-    schemaVerMigr.CreateTableIgnore(schema_version);    
+    // var driverModule = require('../drivers/' + settings.driver);
+    // var schemaVerMigr = new driverModule.Migration();
+    // schemaVerMigr.CreateTableIgnore(schema_version);    
 
     // Apply migrations
     paths.forEach(function(file) {
@@ -51,8 +51,7 @@ function domigrate(paths: Array<string>) {
 }
 
 function migrate(file: string) {
-    var migrationModule = require(file);
-    var migr = new migrationModule.MigrationModule.Migrate();
+    var migr = require(file).migration;
     if (process.argv[2] === 'down') {
         migr.Down();
     } else {

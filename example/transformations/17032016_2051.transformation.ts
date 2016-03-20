@@ -1,13 +1,10 @@
-import {Migration} from '../../drivers/sqlite';
+import {Migration} from '../../index';
 import {item} from '../item';
 
-export module MigrationModule {
-    export class Migrate extends Migration {
-        Up() {
-            this.CreateTable(item);    
-        }
-        Down() {
-            this.DropTable(item);
-        }    
-    }
+export var migration = new Migration;
+migration.Up = function() {
+    this.CreateTable(item);
+}
+migration.Down = function() {
+    this.DropTable(item);
 }
