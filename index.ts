@@ -2,8 +2,19 @@
 
 var settings = require('../settings.' + process.env.NODE_ENV + '.json');
 
-export function Table(constructor: Function) {
-    console.log(constructor);
+export function Table(table_name: string) {
+    return function (target: any) {
+        // console.log(target, table_name);
+
+        let newConstructor = function () {
+            this.table_name = table_name;
+        };
+
+        newConstructor.prototype = Object.create(target.prototype);
+        newConstructor.prototype.constructor = target;
+
+        return <any> newConstructor;
+    }
 }
 
 export interface FieldMetaData {

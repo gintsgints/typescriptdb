@@ -1,6 +1,6 @@
 import {Table, Field} from '../index';
 
-@Table
+@Table('item_table_name')
 export class Item {
     @Field({ caption: "Part No.", size: 9 })
     Partno: string = "Default";
