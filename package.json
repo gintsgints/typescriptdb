@@ -25,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/gintsgints/typescriptdb/issues"
   },
-  "homepage": "https://github.com/gintsgints/typescriptdb#readme"
+  "homepage": "https://github.com/gintsgints/typescriptdb#readme",
+  "dependencies": {
+    "reflect-metadata": "0.1.3"
+  }
 }

@@ -1,9 +1,9 @@
 import {Database} from "sqlite3";
-import {MigrationBase, Model} from '../index';
+import {MigrationBase, ModelBase} from '../index';
 
 module Driver {
     export class MigrationImpl extends MigrationBase {
-        CreateTable(Model) {
+        CreateTable(ModelBase) {
             console.log('Creating oracle table');
         };
         DropTable(string) {

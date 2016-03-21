@@ -1,12 +1,10 @@
-import {Model} from '../index';
-import {FIELD_TYPE} from '../index';
+import {Table, Field} from '../index';
 
-// --- Example usage
-export var item = new Model();
-
-item.tableName = 'item';
-item.fields = [
-  { type: FIELD_TYPE.string, name: "partno", caption:"Part No.", size: 2, pk: true },
-  { type: FIELD_TYPE.number, name: "instock", caption: "In Stock", size: 2 }    
-]
-
+@Table
+export class Item {
+    @Field({ caption: "Part No.", size: 9 })
+    Partno: string = "Default";
+    
+    @Field({ caption: "In Stock", size: 2 })
+    Instock: number = 0;
+}
