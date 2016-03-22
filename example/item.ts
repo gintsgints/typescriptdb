@@ -1,7 +1,7 @@
-import {Table, Field} from '../index';
+import {Model, Table, Field} from '../index';
 
 @Table('item_table_name')
-export class Item {
+export class Item extends Model {
     @Field({ caption: "Part No.", size: 9 })
     Partno: string = "Default";
     
