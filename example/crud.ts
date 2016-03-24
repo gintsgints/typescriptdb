@@ -2,14 +2,11 @@ import "reflect-metadata";
 import {Item} from './item';
 import {Driver} from '../drivers/sqlite';
 
+// Before we initiate model we need driver
 var driver = new Driver();
 
+// Let's create object
 var test = new Item(driver);
 test.Partno = "234";
+test.Instock = 2;
 test.Save();
-
-console.log('Test object:');
-console.log(test);
-console.log(test.driver);
-console.log('Metadata caption for field Partno:', Reflect.getMetadata('caption', test, 'Partno'));
-console.log('Metadata caption for field Instock:', Reflect.getMetadata('caption', test, 'Instock'));

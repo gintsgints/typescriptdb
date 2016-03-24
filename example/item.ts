@@ -1,8 +1,9 @@
 import {Model, Table, Field} from '../index';
 
+// Model definition using table and field decorators for metadata
 @Table('item_table_name')
 export class Item extends Model {
-    @Field({ caption: "Part No.", size: 9 })
+    @Field({ pk: true, caption: "Part No.", size: 9 })
     Partno: string = "Default";
     
     @Field({ caption: "In Stock", size: 2 })
