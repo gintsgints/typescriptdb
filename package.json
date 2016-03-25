@@ -7,7 +7,7 @@
     "example": "example"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha ./built/test"
   },
   "repository": {
     "type": "git",
@@ -28,5 +28,8 @@
   "homepage": "https://github.com/gintsgints/typescriptdb#readme",
   "dependencies": {
     "reflect-metadata": "0.1.3"
+  },
+  "devDependencies": {
+    "chai": "3.5.0"
   }
 }

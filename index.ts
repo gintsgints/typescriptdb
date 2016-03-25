@@ -40,7 +40,7 @@ export interface FieldMetaData {
 // Field decorator itself
 export function Field(metadata: FieldMetaData): PropertyDecorator {
     return function (target: Object, name: string) {
-        Reflect.defineMetadata(META_FIELD, true, target, name);
+        Reflect.defineMetadata("field_" + name, true, target); // We store field name as table metadata
         Reflect.defineMetadata(META_PK, metadata.pk, target, name);
         Reflect.defineMetadata(META_CAPTION, metadata.caption, target, name);
         Reflect.defineMetadata(META_SIZE, metadata.size, target, name);
@@ -53,40 +53,53 @@ export function Field(metadata: FieldMetaData): PropertyDecorator {
 // Base for all aiviable drivers.
 // Implement framework specific functionality, like metadata interpretation.
 export class DriverBase {
-    getFieldsWithMeta(obj: Object, metadataKey: string): Array<string> {
+    getFieldsWithMeta(obj: Model, metadataKey: string): Array<string> {
         var result = [];
-        Object.keys(obj).forEach(function(key) {
+        var key: string = "";
+        var keys = Reflect.getMetadataKeys(obj);
+        keys.forEach(function(key: string) {
+            key = key.slice(key.indexOf('field_') + 6);
             if (Reflect.getMetadata(metadataKey, obj, key)) {
                 result.push(key);
             }
         });
+
         return result;
     }
     
-    getFields(obj: Object): Array<string> {
+    getFields(obj: Model): Array<string> {
         return this.getFieldsWithMeta(obj, META_FIELD);
     }
     
-    getPrimaryKeys(obj: Object): Array<string> {
+    getPrimaryKeys(obj: Model): Array<string> {
         return this.getFieldsWithMeta(obj, META_PK);
     }
     
-    getProperties(obj: Object, field: string): Array<string> {
+    getProperties(obj: Model, field: string): Array<string> {
         return Reflect.getMetadataKeys(obj, field);
     }
 }
 
 // Interface for implementing drivers. All functions which need to implement is here.
 export interface DriverInterface {
-    Save(obj:Object):void;   
+    Save(obj:Model):void;
+    Find(obj:Model, id:string, callback:Function);   
 }
 
 // Using driver you can  define database model
 export class Model {
     driver: DriverInterface;
+    table_name: string;
     
     constructor(driver: DriverInterface) {
         this.driver = driver;    
+    }
+    
+    Find(id: string, callback: Function) {
+        this.driver.Find(this, id, function(err, row) {
+            // Transform row back to object
+            callback(err, row);
+        });
     }
     
     Save(): void {
