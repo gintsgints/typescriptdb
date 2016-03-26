@@ -1,10 +1,11 @@
-import {Migration} from '../../index';
-import {item} from '../item';
+import {Migration, MigrationBase} from '../../index';
+import {Item} from '../item';
 
-export var migration = new Migration;
-migration.Up = function() {
-    this.CreateTable(item);
-}
-migration.Down = function() {
-    this.DropTable(item);
+export class CreateTable extends Migration implements MigrationBase {
+    Up() {
+        this.CreateTable();
+    }
+    Down() {
+        this.DropTable();    
+    }
 }

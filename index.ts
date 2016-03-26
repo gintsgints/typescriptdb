@@ -53,35 +53,12 @@ export function Field(metadata: FieldMetaData): PropertyDecorator {
 // Base for all aiviable drivers.
 // Implement framework specific functionality, like metadata interpretation.
 export class DriverBase {
-    getFieldsWithMeta(obj: Model, metadataKey: string): Array<string> {
-        var result = [];
-        var key: string = "";
-        var keys = Reflect.getMetadataKeys(obj);
-        keys.forEach(function(key: string) {
-            key = key.slice(key.indexOf('field_') + 6);
-            if (Reflect.getMetadata(metadataKey, obj, key)) {
-                result.push(key);
-            }
-        });
-
-        return result;
-    }
-    
-    getFields(obj: Model): Array<string> {
-        return this.getFieldsWithMeta(obj, META_FIELD);
-    }
-    
-    getPrimaryKeys(obj: Model): Array<string> {
-        return this.getFieldsWithMeta(obj, META_PK);
-    }
-    
-    getProperties(obj: Model, field: string): Array<string> {
-        return Reflect.getMetadataKeys(obj, field);
-    }
 }
 
 // Interface for implementing drivers. All functions which need to implement is here.
 export interface DriverInterface {
+    CreateTable(model: Model):void;    
+    DropTable(table_name: string): void;
     Save(obj:Model):void;
     Find(obj:Model, id:string, callback:Function);   
 }
@@ -95,6 +72,43 @@ export class Model {
         this.driver = driver;    
     }
     
+    getFieldsWithMeta(metadataKey: string): Array<string> {
+        var result = [];
+        var key: string = "";
+        var keys = Reflect.getMetadataKeys(this);
+        var obj = this;
+        keys.forEach(function(key: string) {
+            key = key.slice(key.indexOf('field_') + 6);
+            if (Reflect.getMetadata(metadataKey, obj, key)) {
+                result.push(key);
+            }
+        });
+
+        return result;
+    }
+    
+    getFields(): Array<string> {
+        var result = [];
+        var key: string = "";
+        var keys = Reflect.getMetadataKeys(this);
+        keys.forEach(function(key: string) {
+            if (key.indexOf('field_') !== -1) {
+                key = key.slice(key.indexOf('field_') + 6); 
+                result.push(key);   
+            }
+        });
+
+        return result;
+    }
+    
+    getPrimaryKeys(): Array<string> {
+        return this.getFieldsWithMeta(META_PK);
+    }
+    
+    getProperties(field: string): Array<string> {
+        return Reflect.getMetadataKeys(this, field);
+    }
+
     Find(id: string, callback: Function) {
         this.driver.Find(this, id, function(err, row) {
             // Transform row back to object
@@ -107,15 +121,26 @@ export class Model {
     }
 }
 
-// // --- Migration definitions
-// export class MigrationBase {
-//     Up() {
-        
-//     };
-//     Down() {
-        
-//     };
-// }
+export interface MigrationBase {
+    Up();
+    Down();
+}
 
-// export var Migration = require('./drivers/' + settings.driver + '.migration').MigrationImpl;
-// export var Model = require('./drivers/' + settings.driver + '.model').Model;
+// --- Migration definitions
+export class Migration {
+    driver: DriverInterface;
+    model: Model;
+
+    constructor(driver: DriverInterface, model: Model) {
+        this.driver = driver;
+        this.model = model;    
+    }
+    
+    CreateTable() {
+        this.driver.CreateTable(this.model);    
+    }
+    
+    DropTable() {
+        this.driver.DropTable(this.model.table_name);
+    }
+}
