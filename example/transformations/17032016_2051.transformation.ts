@@ -1,7 +1,8 @@
 import {Migration, MigrationBase} from '../../index';
 import {Item} from '../item';
+import {Driver} from '../../drivers/sqlite';
 
-export class CreateTable extends Migration implements MigrationBase {
+class CreateTable extends Migration implements MigrationBase {
     Up() {
         this.CreateTable();
     }
@@ -9,3 +10,7 @@ export class CreateTable extends Migration implements MigrationBase {
         this.DropTable();    
     }
 }
+
+var driver = new Driver();
+var item = new Item(driver);
+export var migration = new CreateTable(item);

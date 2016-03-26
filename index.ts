@@ -128,19 +128,17 @@ export interface MigrationBase {
 
 // --- Migration definitions
 export class Migration {
-    driver: DriverInterface;
     model: Model;
 
-    constructor(driver: DriverInterface, model: Model) {
-        this.driver = driver;
+    constructor(model: Model) {
         this.model = model;    
     }
     
     CreateTable() {
-        this.driver.CreateTable(this.model);    
+        this.model.driver.CreateTable(this.model);    
     }
     
     DropTable() {
-        this.driver.DropTable(this.model.table_name);
+        this.model.driver.DropTable(this.model.table_name);
     }
 }

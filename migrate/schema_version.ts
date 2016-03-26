@@ -1,14 +1,18 @@
-import {Model} from '../index';
-import {FIELD_TYPE} from '../index';
+import {Model, Table, Field} from '../index';
 
 // --- Example usage
-export var schema_version = new Model();
+// Model definition using table and field decorators for metadata
+@Table('schema_version')
+export class SchemaVersion extends Model {
+    @Field({ pk: true, size: 9 })
+    Version: number = 0;
+    
+    @Field({ caption: "Description", size: 50 })
+    Desc: string;
 
-schema_version.tableName = 'schema_version';
-schema_version.fields = [
-  { type: FIELD_TYPE.number, name: "version", caption:"Database version", size: 2, pk: true },
-  { type: FIELD_TYPE.text, name: "desc", caption: "Change Description" },    
-  { type: FIELD_TYPE.datetime, name: "apply", caption: "Aplly date", size: 2 },    
-  { type: FIELD_TYPE.string, name: "state", caption: "State", size: 2 }    
-]
+    @Field({ caption: "Apply date" })
+    DateTime: Date;
 
+    @Field({ caption: "State", size: 2 })
+    state: string;
+}

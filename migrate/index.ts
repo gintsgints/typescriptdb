@@ -1,6 +1,6 @@
 var fs = require('fs');
 var path = require('path');
-import {schema_version} from './schema_version';
+import {SchemaVersion} from './schema_version';
 
 var settings = require('../../settings.' + process.env.NODE_ENV + '.json');
 
