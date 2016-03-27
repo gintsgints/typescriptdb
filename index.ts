@@ -55,8 +55,8 @@ export class DriverBase {
 export interface DriverInterface {
     CreateTable(model: Model):void;    
     DropTable(table_name: string): void;
+    Find(obj:Model, callback: Function);
     Save(obj:Model):void;
-    Find(obj:Model, id:string, callback:Function);   
 }
 
 // Using driver you can  define database model
@@ -66,6 +66,10 @@ export class Model {
     
     constructor(driver: DriverInterface) {
         this.driver = driver;    
+    }
+    
+    getTableName(): string {
+        return Reflect.getMetadata(META_TABLENAME, this); 
     }
     
     getFieldsWithMeta(metadataKey: string): Array<string> {
@@ -119,10 +123,10 @@ export class Model {
         return Reflect.getMetadataKeys(this, field);
     }
 
-    Find(id: string, callback: Function) {
-        this.driver.Find(this, id, function(err, row) {
+    Find(callback: Function) {
+        this.driver.Find(this, function(err, row) {
             // Transform row back to object
-            callback(err, row);
+            console.log("Find result:", err, row);
         });
     }
     
@@ -149,6 +153,6 @@ export class Migration {
     }
     
     DropTable() {
-        this.model.driver.DropTable(Reflect.getMetadata(META_TABLENAME, this));
+        this.model.driver.DropTable(this.model.getTableName());
     }
 }

@@ -17,12 +17,12 @@ export class Driver extends DriverBase implements DriverInterface {
         }
     }
     
-    Find(obj: Model, search: string, callback: Function) {
+    Find(obj: Model, callback: Function) {
         var pks = obj.getPrimaryKeys();
         if (this.verbose) { console.log("Primary keys:", pks); };  
         if (pks.length > 0) {
             var sql = "select " + obj.getFields().join(", ") + " FROM ";
-            sql += obj.table_name;
+            sql += obj.getTableName();
             console.log('SQL: ', sql);
             this.db.get(sql, callback);
         } else {
@@ -44,14 +44,14 @@ export class Driver extends DriverBase implements DriverInterface {
     
     CreateTable(model: Model) {
         var sql: string;
-        sql = "CREATE TABLE " + model.table_name + " (";
+        sql = "CREATE TABLE " + model.getTableName() + " (";
         sql = sql + model.getFields().join(',')
         this.db.run(sql + " )");
     };
     CreateTableIgnore(model: Model) {
         var sql: string;
         console.log();
-        sql = "CREATE TABLE IF NOT EXISTS " + model.table_name + " (";
+        sql = "CREATE TABLE IF NOT EXISTS " + model.getTableName() + " (";
         sql = sql + model.getFields().join(',')
         this.db.run(sql + " )");
     };
