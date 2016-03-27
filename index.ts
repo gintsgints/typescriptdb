@@ -124,17 +124,11 @@ export class Model {
     }
 
     Find(callback: Function) {
-        this.driver.Find(this, function(err, row) {
-            // Transform row back to object
-            console.log("Find result:", err, row);
-        });
+        this.driver.Find(this, callback);
     }
     
-    Save(): void {
-        this.driver.Save(this, function(err, row) {
-            // Transform row back to object
-            console.log("Save result:", err, row);
-        });
+    Save(callback: Function): void {
+        this.driver.Save(this, callback);
     }
 }
 

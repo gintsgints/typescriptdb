@@ -17,14 +17,18 @@ class Item extends Model {
 var driver = new Driver();    
 var record = new Item(driver);
 
-beforeEach(function(done) {
-    record.driver.DropTable('item_table_name', function(err, result) {
-        done();
-    });
-    // record.driver.CreateTable(record);
-})
-
 describe('CRUD operations with objects', function() {
+    beforeEach(function(done) {
+        record.driver.DropTable('item_table_name', function(err, result) {
+            record.driver.CreateTable(record, function(err, result) {
+                if (!err) {
+                    done();
+                } else {
+                    throw err;
+                }    
+            });
+        });
+    })
     describe('Query operations', function() {
         it('Find should get record by ID', function(done) {
             record.Partno = 1;
