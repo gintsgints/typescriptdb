@@ -3,10 +3,13 @@ import {DriverInterface, DriverBase, Model} from "../index"
 
 var settings = require('../../settings.' + process.env.NODE_ENV + '.json');
 
+export const DRIVER_STRINGTERM = '"';
+
 export class Driver extends DriverBase implements DriverInterface {
     db: Database;
     verbose: boolean = false;
 
+    // Management functions
     constructor(options?: Object) {
         super();
         this.db = new Database(settings.connection);
@@ -17,6 +20,15 @@ export class Driver extends DriverBase implements DriverInterface {
         }
     }
     
+    Enclose(obj: Model, field, value): string {
+        if (typeof obj[field] === 'string') {
+            return DRIVER_STRINGTERM + value + DRIVER_STRINGTERM;
+        } else {
+            return value;
+        }
+    }
+        
+    // Object like functions
     Find(obj: Model, callback: Function) {
         var pks = obj.getPrimaryKeys();
         if (this.verbose) { console.log("Primary keys:", pks); };  
@@ -38,10 +50,7 @@ export class Driver extends DriverBase implements DriverInterface {
         console.log('First field proprties:', obj.getProperties(fields[0]));
     }
     
-    Insert(obj: Model):void {
-        
-    }
-    
+    // Migration like functions
     CreateTable(model: Model, callback: Function) {
         var sql: string;
         sql = "CREATE TABLE " + model.getTableName() + " (";
@@ -61,9 +70,10 @@ export class Driver extends DriverBase implements DriverInterface {
         var values = model.getValues();
         var fields = [];
         var fieldvalues = [];
+        var myself = this;
         Object.keys(values).forEach(function (key) {
             fields.push(key);
-            fieldvalues.push(values[key])
+            fieldvalues.push(myself.Enclose(model, key, values[key]));
         })
         sql = 'insert into ' + model.getTableName() + ' (' + fields.join(',') + ') ';
         sql += 'values (' + fieldvalues.join(',') + ')';

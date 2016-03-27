@@ -25,7 +25,12 @@ describe('CRUD operations with objects', function() {
                     record.Partno = 1;
                     record.Name = 'Part number 1';
                     record.driver.InsertRecord(record, function(err, result) {
-                        done();
+                        if (!err) {
+                            done();    
+                        } else {
+                            throw err;
+                        }
+                        
                     });
                 } else {
                     throw err;
@@ -37,7 +42,8 @@ describe('CRUD operations with objects', function() {
         it('Find should get record by ID', function(done) {
             record.Partno = 1;
             record.Find(function(err, result) {
-                // Expect expected
+                expect(err).to.be.null;
+                expect(record.Name).to.be.equal('Part number 1');
                 done();
             });
         });
@@ -45,10 +51,10 @@ describe('CRUD operations with objects', function() {
     describe('Write operations', function() {
         it('When save record, and not found by primary key, it should be created', function() {
 
-            record.Partno = 1;
-            record.Name = 'Part number 1';
+            record.Partno = 2;
+            record.Name = 'Part number 2';
             record.Save(function(err, result) {
-                
+                // TODO
             });
         })
     })
