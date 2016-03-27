@@ -8,21 +8,30 @@ class Item extends Model {
     @Field({pk: true, caption: "Part No."})
     Partno: number;
     
+    @Field({ caption: "In Stock", size: 2 })
+    Instock: number = 0;
+
     @Field({})
     Name: string;
 }
 var driver = new Driver();    
 var record = new Item(driver);
 
-beforeEach(function() {
-    record.driver.DropTable('item_table_name');
-    record.driver.CreateTable(record);
+beforeEach(function(done) {
+    record.driver.DropTable('item_table_name', function(err, result) {
+        done();
+    });
+    // record.driver.CreateTable(record);
 })
 
 describe('CRUD operations with objects', function() {
     describe('Query operations', function() {
-        it('Find should get record by ID', function() {
-                
+        it('Find should get record by ID', function(done) {
+            record.Partno = 1;
+            record.Find(function(err, result) {
+                // Expect expected
+                done();
+            });
         });
     });
     describe('Write operations', function() {

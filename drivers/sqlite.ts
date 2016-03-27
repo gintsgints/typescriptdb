@@ -30,7 +30,7 @@ export class Driver extends DriverBase implements DriverInterface {
         }
     }
     
-    Save(obj: Model):void {
+    Save(obj: Model, callback: Function):void {
         console.log("Saving object... what data we have about it:");
         var fields = obj.getFields();
         console.log('Fields:', fields);
@@ -42,21 +42,21 @@ export class Driver extends DriverBase implements DriverInterface {
         
     }
     
-    CreateTable(model: Model) {
+    CreateTable(model: Model, callback: Function) {
         var sql: string;
         sql = "CREATE TABLE " + model.getTableName() + " (";
         sql = sql + model.getFields().join(',')
-        this.db.run(sql + " )");
+        this.db.run(sql + " )", callback);
     };
-    CreateTableIgnore(model: Model) {
+    CreateTableIgnore(model: Model, callback: Function) {
         var sql: string;
         console.log();
         sql = "CREATE TABLE IF NOT EXISTS " + model.getTableName() + " (";
         sql = sql + model.getFields().join(',')
-        this.db.run(sql + " )");
+        this.db.run(sql + " )", callback);
     };
     
-    DropTable(tablename: string) {
-        this.db.run('DROP TABLE ' + tablename);
+    DropTable(tablename: string, callback: Function) {
+        this.db.run('DROP TABLE ' + tablename, callback);
     }
 }

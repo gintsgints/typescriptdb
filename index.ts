@@ -53,10 +53,10 @@ export class DriverBase {
 
 // Interface for implementing drivers. All functions which need to implement is here.
 export interface DriverInterface {
-    CreateTable(model: Model):void;    
-    DropTable(table_name: string): void;
+    CreateTable(model: Model, callback: Function):void;    
+    DropTable(table_name: string, callback: Function): void;
     Find(obj:Model, callback: Function);
-    Save(obj:Model):void;
+    Save(obj:Model, callback: Function):void;
 }
 
 // Using driver you can  define database model
@@ -131,7 +131,10 @@ export class Model {
     }
     
     Save(): void {
-        this.driver.Save(this);
+        this.driver.Save(this, function(err, row) {
+            // Transform row back to object
+            console.log("Save result:", err, row);
+        });
     }
 }
 
@@ -143,16 +146,21 @@ export interface MigrationBase {
 // --- Migration definitions
 export class Migration {
     model: Model;
+    callback: Function;
 
     constructor(model: Model) {
         this.model = model;    
     }
-    
+        
     CreateTable() {
-        this.model.driver.CreateTable(this.model);    
+        this.model.driver.CreateTable(this.model, this.callback);    
     }
     
     DropTable() {
-        this.model.driver.DropTable(this.model.getTableName());
+        this.model.driver.DropTable(this.model.getTableName(), this.callback);
+    }
+    
+    SetCallback(callback: Function) {
+        this.callback = callback;
     }
 }

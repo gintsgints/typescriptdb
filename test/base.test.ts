@@ -41,7 +41,6 @@ describe('Base object functionality', function() {
         var values = record.getValues();
         
         expect(values.length).to.equal(2);
-        console.log('values = ', values);
         expect(values[0]['Partno']).to.equal('Default');
 
         record.Test = "Assigned value";

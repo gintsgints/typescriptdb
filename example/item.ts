@@ -6,6 +6,10 @@ export class Item extends Model {
     @Field({ pk: true, caption: "Part No.", size: 9 })
     Partno: string = "Default";
     
+    @Field({})
+    Name: string;
+
     @Field({ caption: "In Stock", size: 2 })
     Instock: number = 0;
+    
 }

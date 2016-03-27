@@ -51,11 +51,48 @@ function domigrate(paths: Array<string>) {
 }
 
 function migrate(file: string) {
+    // First we do migration itself
     var migr = require(file).migration;
+    
+    var callback = function(err, result) {
+        if (err) {
+            // if (process.argv[2] !== 'down') {
+            //     // Recording statuss of migration
+            //     var versions = new SchemaVersion(migr.model.driver);
+            //     // Get latest version applied
+            //     var max = 1;
+                
+            //     // Insert next migration record
+            //     versions.Version = max;
+            //     versions.Desc = file;
+            //     versions.DateTime = new Date();
+            //     versions.state = "fail"
+            //     versions.Save();
+            // }    
+            console.log('Migration - ' + file + ' Failed!');
+        } else {
+            // if (process.argv[2] !== 'down') {
+            //     // Recording statuss of migration
+            //     var versions = new SchemaVersion(migr.model.driver);
+            //     // Get latest version applied
+            //     var max = 1;
+                
+            //     // Insert next migration record
+            //     versions.Version = max;
+            //     versions.Desc = file;
+            //     versions.DateTime = new Date();
+            //     versions.state = "ok"
+            //     versions.Save();
+            // }    
+            console.log('Migration - ' + file + ' OK');
+        };
+    }
+    
+    migr.SetCallback(callback);
+    
     if (process.argv[2] === 'down') {
         migr.Down();
     } else {
         migr.Up();
     }
-    console.log('Migration - ' + file + ' OK');
 }
