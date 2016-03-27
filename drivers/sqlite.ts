@@ -5,15 +5,21 @@ var settings = require('../../settings.' + process.env.NODE_ENV + '.json');
 
 export class Driver extends DriverBase implements DriverInterface {
     db: Database;
+    verbose: boolean = false;
 
-    constructor() {
+    constructor(options?: Object) {
         super();
         this.db = new Database(settings.connection);
+        if (!!options) {
+            if (options['verbose']) {
+                this.verbose = true;
+            }
+        }
     }
     
     Find(obj: Model, search: string, callback: Function) {
         var pks = obj.getPrimaryKeys();
-        console.log("primary keys:", pks);  
+        if (this.verbose) { console.log("Primary keys:", pks); };  
         if (pks.length > 0) {
             var sql = "select " + obj.getFields().join(", ") + " FROM ";
             sql += obj.table_name;
@@ -30,6 +36,10 @@ export class Driver extends DriverBase implements DriverInterface {
         console.log('Fields:', fields);
         console.log('Primary Keys:', obj.getPrimaryKeys());
         console.log('First field proprties:', obj.getProperties(fields[0]));
+    }
+    
+    Insert(obj: Model):void {
+        
     }
     
     CreateTable(model: Model) {

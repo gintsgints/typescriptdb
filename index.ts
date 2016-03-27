@@ -5,6 +5,7 @@ var settings = require('../settings.' + process.env.NODE_ENV + '.json');
 // Metata constants applied to field property by decorators
 // after that they used to identify different aspects of field against database
 // This information is used by driver
+const META_TABLENAME = 'table_name';
 const META_FIELD = 'field';
 const META_PK = 'pk';
 const META_CAPTION = 'caption';
@@ -14,16 +15,11 @@ const META_NULLABLE = 'nullable';
 const META_INDEX = 'index';
 
 // Table decorator
-export function Table(table_name: string) {
-    return function (target: any) {
-
-        let newConstructor = function (driver: DriverInterface) {
-            this.table_name = table_name;
-            this.driver = driver;
-        };
-
-        newConstructor.prototype = Object.create(target.prototype);
-        return <any> newConstructor;
+export function Table(tableName: string) {
+    return function(
+        target: Function // The class the decorator is declared on
+        ) {
+        Reflect.defineMetadata(META_TABLENAME, tableName, target.prototype);
     }
 }
 
@@ -101,6 +97,20 @@ export class Model {
         return result;
     }
     
+    getValues(): Array<Object> {
+        var result = [];
+        var fields = this.getFields();
+        var myself = this;
+        fields.forEach(function(field) {
+            if (myself[field] !== undefined) {
+                var rec = {};
+                rec[field] = myself[field];
+                result.push(rec);
+            }
+        })
+        return result;
+    }
+    
     getPrimaryKeys(): Array<string> {
         return this.getFieldsWithMeta(META_PK);
     }
@@ -139,6 +149,6 @@ export class Migration {
     }
     
     DropTable() {
-        this.model.driver.DropTable(this.model.table_name);
+        this.model.driver.DropTable(Reflect.getMetadata(META_TABLENAME, this));
     }
 }
