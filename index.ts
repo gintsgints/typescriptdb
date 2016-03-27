@@ -6,7 +6,7 @@ var settings = require('../settings.' + process.env.NODE_ENV + '.json');
 // after that they used to identify different aspects of field against database
 // This information is used by driver
 const META_TABLENAME = 'table_name';
-const META_FIELD = 'field';
+const META_FIELD_PREF = 'field_';
 const META_PK = 'pk';
 const META_CAPTION = 'caption';
 const META_SIZE = 'size';
@@ -36,7 +36,7 @@ export interface FieldMetaData {
 // Field decorator itself
 export function Field(metadata: FieldMetaData): PropertyDecorator {
     return function (target: Object, name: string) {
-        Reflect.defineMetadata("field_" + name, true, target); // We store field name as table metadata
+        Reflect.defineMetadata(META_FIELD_PREF + name, true, target); // We store field name as table metadata
         Reflect.defineMetadata(META_PK, metadata.pk, target, name);
         Reflect.defineMetadata(META_CAPTION, metadata.caption, target, name);
         Reflect.defineMetadata(META_SIZE, metadata.size, target, name);
@@ -78,7 +78,7 @@ export class Model {
         var keys = Reflect.getMetadataKeys(this);
         var obj = this;
         keys.forEach(function(key: string) {
-            key = key.slice(key.indexOf('field_') + 6);
+            key = key.slice(key.indexOf(META_FIELD_PREF) + 6);
             if (Reflect.getMetadata(metadataKey, obj, key)) {
                 result.push(key);
             }
@@ -92,8 +92,8 @@ export class Model {
         var key: string = "";
         var keys = Reflect.getMetadataKeys(this);
         keys.forEach(function(key: string) {
-            if (key.indexOf('field_') !== -1) {
-                key = key.slice(key.indexOf('field_') + 6); 
+            if (key.indexOf(META_FIELD_PREF) !== -1) {
+                key = key.slice(key.indexOf(META_FIELD_PREF) + 6); 
                 result.push(key);   
             }
         });
