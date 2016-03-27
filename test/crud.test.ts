@@ -22,7 +22,11 @@ describe('CRUD operations with objects', function() {
         record.driver.DropTable('item_table_name', function(err, result) {
             record.driver.CreateTable(record, function(err, result) {
                 if (!err) {
-                    done();
+                    record.Partno = 1;
+                    record.Name = 'Part number 1';
+                    record.driver.InsertRecord(record, function(err, result) {
+                        done();
+                    });
                 } else {
                     throw err;
                 }    
@@ -43,7 +47,9 @@ describe('CRUD operations with objects', function() {
 
             record.Partno = 1;
             record.Name = 'Part number 1';
-            record.Save();
+            record.Save(function(err, result) {
+                
+            });
         })
     })
 });

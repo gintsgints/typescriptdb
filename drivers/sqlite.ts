@@ -56,7 +56,23 @@ export class Driver extends DriverBase implements DriverInterface {
         this.db.run(sql + " )", callback);
     };
     
+    InsertRecord(model: Model, callback: Function) {
+        var sql: string;
+        var values = model.getValues();
+        var fields = [];
+        var fieldvalues = [];
+        Object.keys(values).forEach(function (key) {
+            fields.push(key);
+            fieldvalues.push(values[key])
+        })
+        sql = 'insert into ' + model.getTableName() + ' (' + fields.join(',') + ') ';
+        sql += 'values (' + fieldvalues.join(',') + ')';
+        console.log("SQL:", sql);
+        this.db.run(sql, callback);
+    };
+    
     DropTable(tablename: string, callback: Function) {
         this.db.run('DROP TABLE ' + tablename, callback);
     }
+    
 }

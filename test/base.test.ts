@@ -40,12 +40,11 @@ describe('Base object functionality', function() {
         var record = new Item(driver);
         var values = record.getValues();
         
-        expect(values.length).to.equal(2);
-        expect(values[0]['Partno']).to.equal('Default');
+        expect(values['Partno']).to.equal('Default');
 
         record.Test = "Assigned value";
         values = record.getValues();
-        expect(values.length).to.equal(3);
+        expect(values['Test']).to.equal("Assigned value");
     })
     it('Property metadata should be aiviable without property itself', function() {
         var driver = new Driver();    

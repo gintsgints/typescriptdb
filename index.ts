@@ -57,6 +57,7 @@ export interface DriverInterface {
     DropTable(table_name: string, callback: Function): void;
     Find(obj:Model, callback: Function);
     Save(obj:Model, callback: Function):void;
+    InsertRecord(obj:Model, callback: Function);
 }
 
 // Using driver you can  define database model
@@ -101,15 +102,13 @@ export class Model {
         return result;
     }
     
-    getValues(): Array<Object> {
-        var result = [];
+    getValues(): Object {
+        var result = {};
         var fields = this.getFields();
         var myself = this;
         fields.forEach(function(field) {
             if (myself[field] !== undefined) {
-                var rec = {};
-                rec[field] = myself[field];
-                result.push(rec);
+                result[field] = myself[field];
             }
         })
         return result;
@@ -124,7 +123,12 @@ export class Model {
     }
 
     Find(callback: Function) {
-        this.driver.Find(this, callback);
+        this.driver.Find(this, function(err, result) {
+            if (!err) {
+                console.log("Result:", result);    
+            }
+            callback(err, result);
+        });
     }
     
     Save(callback: Function): void {
@@ -144,6 +148,10 @@ export class Migration {
 
     constructor(model: Model) {
         this.model = model;    
+    }
+    
+    InsertRecord() {
+        this.model.driver.InsertRecord(this.model, this.callback);    
     }
         
     CreateTable() {
