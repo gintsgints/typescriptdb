@@ -40,10 +40,11 @@ describe('CRUD operations with objects', function() {
     })
     describe('Query operations', function() {
         it('Find should get record by ID', function(done) {
-            record.Partno = 1;
-            record.Find(function(err, result) {
+            var findrecord = new Item(driver);
+            findrecord.Partno = 1;
+            findrecord.Find(function(err, result) {
                 expect(err).to.be.null;
-                expect(record.Name).to.be.equal('Part number 1');
+                expect(findrecord.Name).to.be.equal('Part number 1');
                 done();
             });
         });

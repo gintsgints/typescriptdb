@@ -35,7 +35,9 @@ export class Driver extends DriverBase implements DriverInterface {
         if (pks.length > 0) {
             var sql = "select " + obj.getFields().join(", ") + " FROM ";
             sql += obj.getTableName();
-            console.log('SQL: ', sql);
+            if (this.verbose) {
+                console.log('SQL: ', sql);
+            }
             this.db.get(sql, callback);
         } else {
             callback('Primary key is not defined', null);
@@ -77,7 +79,9 @@ export class Driver extends DriverBase implements DriverInterface {
         })
         sql = 'insert into ' + model.getTableName() + ' (' + fields.join(',') + ') ';
         sql += 'values (' + fieldvalues.join(',') + ')';
-        console.log("SQL:", sql);
+        if (this.verbose) {
+            console.log("SQL:", sql);
+        }
         this.db.run(sql, callback);
     };
     

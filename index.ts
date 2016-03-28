@@ -69,6 +69,15 @@ export class Model {
         this.driver = driver;    
     }
     
+    // Helper functions
+    assignData(result: Object):void {
+        var myself = this;
+        Object.keys(result).forEach(function(key: string) {
+            myself[key] = result[key];
+        });
+    }
+    
+    // Metadata helper functions
     getTableName(): string {
         return Reflect.getMetadata(META_TABLENAME, this); 
     }
@@ -122,10 +131,12 @@ export class Model {
         return Reflect.getMetadataKeys(this, field);
     }
 
+    // Data manipulation
     Find(callback: Function) {
+        var myself = this;
         this.driver.Find(this, function(err, result) {
             if (!err) {
-                console.log("Result:", result);    
+                myself.assignData(result);
             }
             callback(err, result);
         });
