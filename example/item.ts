@@ -4,7 +4,7 @@ import {Model, Table, Field} from '../index';
 @Table('item_table_name')
 export class Item extends Model {
     @Field({ pk: true, caption: "Part No.", size: 9 })
-    Partno: string = "Default";
+    Partno: number = 0;
     
     @Field({})
     Name: string;

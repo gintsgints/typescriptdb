@@ -7,24 +7,22 @@ var driver = new Driver();
 
 // Find existing object (Find works by primary key)
 var record = new Item(driver);
-record.Find("234", function(err, obj) {
-    if (!err) {
-        console.log('Record found:');
-        console.log(obj);
+record.Partno = 234;
+record.Name = "Part number 234 name";
+record.Instock = 3;
+record.Save(function(err, result) {
+    if (err) {
+        console.log("Error while saving part");
     } else {
-        console.log('Record not found Err: ', err);
-        // Let's create object
-        var test = new Item(driver);
-        test.Partno = "234";
-        test.Instock = 2;
-        test.Save();
-    }
+        // now let's try find that part.
+        var newpart = new Item(driver);
+        newpart.Partno = 234;
+        newpart.Find(function(err, result) {
+            if (err) {
+                console.log("Error while find part");
+            } else {
+                console.log("Part found:", newpart);
+            }
+        })
+    } 
 })
-
-// record.Find()
-// if (record.Find("234")) {
-//     console.log('Record found:');
-//     console.log(record);
-// } else {
-// }
-
