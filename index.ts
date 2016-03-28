@@ -56,8 +56,8 @@ export interface DriverInterface {
     CreateTable(model: Model, callback: Function):void;    
     DropTable(table_name: string, callback: Function): void;
     Find(obj:Model, callback: Function);
-    Save(obj:Model, callback: Function):void;
-    InsertRecord(obj:Model, callback: Function);
+    Insert(obj:Model, callback: Function);
+    Update(obj:Model, callback: Function);
 }
 
 // Using driver you can  define database model
@@ -135,7 +135,7 @@ export class Model {
     Find(callback: Function) {
         var myself = this;
         this.driver.Find(this, function(err, result) {
-            if (!err) {
+            if (result) {
                 myself.assignData(result);
             }
             callback(err, result);
@@ -143,7 +143,23 @@ export class Model {
     }
     
     Save(callback: Function): void {
-        this.driver.Save(this, callback);
+        var pk = this.getPrimaryKeys();
+        var myself = this;
+        if (this[pk[0]]) {
+            this.Find(function(err, result) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    if (result) {
+                        myself.driver.Update(myself, callback);    
+                    } else {
+                        myself.driver.Insert(myself, callback);
+                    }
+                }
+            })            
+        } else {
+            callback("No primary key provided", null);
+        }
     }
 }
 
@@ -161,8 +177,8 @@ export class Migration {
         this.model = model;    
     }
     
-    InsertRecord() {
-        this.model.driver.InsertRecord(this.model, this.callback);    
+    Insert() {
+        this.model.driver.Insert(this.model, this.callback);    
     }
         
     CreateTable() {
