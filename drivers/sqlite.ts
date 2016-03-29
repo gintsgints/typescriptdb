@@ -44,8 +44,44 @@ export class Driver extends DriverBase implements DriverInterface {
                     callback(err, result);    
                 } else {
                     callback(err, null);
-                }
-                
+                }             
+            });
+        } else {
+            callback('Primary key is not defined', null);
+        }
+    }
+    
+    First(obj: Model, callback: Function) {
+        var sql = "select " + obj.getFields().join(", ") + " from " + obj.getTableName();
+        var pks = obj.getPrimaryKeys();
+        if (pks.length > 0) {
+            sql += " order by " + pks[0];
+        }
+        sql += " limit 1 ";
+        if (this.verbose) {console.log('SQL: ', sql);}
+        this.db.get(sql, function(err, result) {
+            if (result) {
+                callback(err, result);    
+            } else {
+                callback(err, null);
+            }             
+        });
+    }
+
+    Last(obj: Model, callback: Function) {
+        var pks = obj.getPrimaryKeys();
+        if (this.verbose) { console.log("Primary keys:", pks); };  
+        if (pks.length > 0) {
+            var sql = "select " + obj.getFields().join(", ") + " FROM ";
+            sql += obj.getTableName();
+            sql += ' where ' + pks[0] + ' = (select max(' + pks[0] + ') from ' + obj.getTableName() + ')';
+            if (this.verbose) {console.log('SQL: ', sql);}
+            this.db.get(sql, function(err, result) {
+                if (result) {
+                    callback(err, result);    
+                } else {
+                    callback(err, null);
+                }             
             });
         } else {
             callback('Primary key is not defined', null);

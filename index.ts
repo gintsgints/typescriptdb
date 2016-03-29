@@ -58,6 +58,8 @@ export interface DriverInterface {
     Find(obj:Model, callback: Function);
     Insert(obj:Model, callback: Function);
     Update(obj:Model, callback: Function);
+    First(obj:Model, callback: Function);
+    Last(obj:Model, callback: Function);
 }
 
 // Using driver you can  define database model
@@ -135,6 +137,26 @@ export class Model {
     Find(callback: Function) {
         var myself = this;
         this.driver.Find(this, function(err, result) {
+            if (result) {
+                myself.assignData(result);
+            }
+            callback(err, result);
+        });
+    }
+    
+    First(callback: Function) {
+        var myself = this;
+        this.driver.First(this, function(err, result) {
+            if (result) {
+                myself.assignData(result);
+            }
+            callback(err, result);
+        });
+    }
+    
+    Last(callback: Function) {
+        var myself = this;
+        this.driver.Last(this, function(err, result) {
             if (result) {
                 myself.assignData(result);
             }
