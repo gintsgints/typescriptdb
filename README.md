@@ -1,4 +1,4 @@
-# typescriptdb
+# typescriptdb [![Build Status](https://travis-ci.org/gintsgints/typescriptdb.svg?branch=master)](https://travis-ci.org/gintsgints/typescriptdb)
 Database backend for node, powered by typescript.
 
 # Objectives
