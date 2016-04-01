@@ -1,5 +1,8 @@
 language: node_js
 node_js:
   - "4.1.2"
+before_install:
+  - npm i -g typings
 before_script:
+  - typings install
   - node ./node_modules/tsc/bin/tsc
