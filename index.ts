@@ -54,6 +54,7 @@ export class DriverBase {
 // Interface for implementing drivers. All functions which need to implement is here.
 export interface DriverInterface {
     CreateTable(model: Model, callback: Function):void;    
+    CreateTableIgnore(model: Model, callback: Function):void;    
     DropTable(table_name: string, callback: Function): void;
     Find(obj:Model, callback: Function);
     Insert(obj:Model, callback: Function);
