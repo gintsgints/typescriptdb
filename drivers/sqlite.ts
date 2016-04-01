@@ -35,10 +35,8 @@ export class Driver extends DriverBase implements DriverInterface {
         if (pks.length > 0) {
             var sql = "select " + obj.getFields().join(", ") + " FROM ";
             sql += obj.getTableName();
-            sql += ' where ' + pks[0] + ' = ' + obj[pks[0]];
-            if (this.verbose) {
-                console.log('SQL: ', sql);
-            }
+            sql += ' where ' + pks[0] + ' = ' + this.Enclose(obj, pks[0], obj[pks[0]]);
+            if (this.verbose) { console.log('SQL: ', sql); }
             this.db.get(sql, function(err, result) {
                 if (result) {
                     callback(err, result);    
@@ -101,9 +99,7 @@ export class Driver extends DriverBase implements DriverInterface {
         })
         sql = sql.slice(0, sql.length - 1);
 
-        if (this.verbose) {
-            console.log("SQL:", sql);
-        }
+        if (this.verbose) { console.log("SQL:", sql); }
         this.db.run(sql, callback);
     }
     
@@ -119,9 +115,7 @@ export class Driver extends DriverBase implements DriverInterface {
         })
         sql = 'insert into ' + model.getTableName() + ' (' + fields.join(',') + ') ';
         sql += 'values (' + fieldvalues.join(',') + ')';
-        if (this.verbose) {
-            console.log("SQL:", sql);
-        }
+        if (this.verbose) { console.log("SQL:", sql); }
         this.db.run(sql, callback);
     };
     
@@ -130,6 +124,7 @@ export class Driver extends DriverBase implements DriverInterface {
         var sql: string;
         sql = "CREATE TABLE " + model.getTableName() + " (";
         sql = sql + model.getFields().join(',')
+        if (this.verbose) { console.log("SQL:", sql); }
         this.db.run(sql + " )", callback);
     };
     CreateTableIgnore(model: Model, callback: Function) {
@@ -137,11 +132,14 @@ export class Driver extends DriverBase implements DriverInterface {
         console.log();
         sql = "CREATE TABLE IF NOT EXISTS " + model.getTableName() + " (";
         sql = sql + model.getFields().join(',')
+        if (this.verbose) { console.log("SQL:", sql); }
         this.db.run(sql + " )", callback);
     };
     
     DropTable(tablename: string, callback: Function) {
-        this.db.run('DROP TABLE ' + tablename, callback);
+        var sql = 'DROP TABLE ' + tablename;
+        if (this.verbose) { console.log("SQL:", sql); }
+        this.db.run(sql, callback);
     }
     
 }

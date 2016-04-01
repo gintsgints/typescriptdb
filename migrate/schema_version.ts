@@ -5,13 +5,13 @@ import {Model, Table, Field} from '../index';
 @Table('schema_version')
 export class SchemaVersion extends Model {
     @Field({ pk: true, size: 9 })
-    Version: number = 0;
+    version: string = '';
     
     @Field({ caption: "Description", size: 50 })
-    Desc: string;
+    desc: string;
 
     @Field({ caption: "Apply date" })
-    DateTime: Date;
+    dateTime: Date;
 
     @Field({ caption: "State", size: 2 })
     state: string;

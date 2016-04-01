@@ -39,11 +39,6 @@ walk(settings.transformations, function(err, results) {
 // End of looping trough all files for .transformation
 
 function domigrate(paths: Array<string>) {
-    // Check version table
-    // var driverModule = require('../drivers/' + settings.driver);
-    // var schemaVerMigr = new driverModule.Migration();
-    // schemaVerMigr.CreateTableIgnore(schema_version);    
-
     // Apply migrations
     paths.forEach(function(file) {
         migrate(file);
@@ -51,48 +46,66 @@ function domigrate(paths: Array<string>) {
 }
 
 function migrate(file: string) {
-    // First we do migration itself
+    // Require migration
     var migr = require(file).migration;
-    
+    // Schema versions table
+    var ver = new SchemaVersion(migr.model.driver);
+
+    // Prepeare callback for migration
     var callback = function(err, result) {
         if (err) {
-            // if (process.argv[2] !== 'down') {
-            //     // Recording statuss of migration
-            //     var versions = new SchemaVersion(migr.model.driver);
-            //     // Get latest version applied
-            //     var max = 1;
-                
-            //     // Insert next migration record
-            //     versions.Version = max;
-            //     versions.Desc = file;
-            //     versions.DateTime = new Date();
-            //     versions.state = "fail"
-            //     versions.Save();
-            // }    
-            console.log('Migration - ' + file + ' Failed!');
+            fail(file, err);
         } else {
-            // if (process.argv[2] !== 'down') {
-            //     // Recording statuss of migration
-            //     var versions = new SchemaVersion(migr.model.driver);
-            //     // Get latest version applied
-            //     var max = 1;
-                
-            //     // Insert next migration record
-            //     versions.Version = max;
-            //     versions.Desc = file;
-            //     versions.DateTime = new Date();
-            //     versions.state = "ok"
-            //     versions.Save();
-            // }    
-            console.log('Migration - ' + file + ' OK');
+            ver.state = 'ok'
+            ver.Save(function(err, result) {
+                if (err) {
+                    console.log('saving... version')
+                    fail(file, err);
+                } else {
+                    success(file);
+                }
+            })
         };
     }
-    
+
+    // Then we do migration itself
     migr.SetCallback(callback);
     
-    if (process.argv[2] === 'down') {
-        migr.Down();
-    } else {
-        migr.Up();
-    }
+    ver.Last(function(err, result) {
+        if (err) {
+            fail(file, err);
+        } else {
+            if (ver.version === null) {
+                console.log("null result")
+            }
+            console.log('Last version record for: ', ver.version);
+            if (process.argv[2] === 'down') {
+                migr.Down();
+            } else {
+                var newver = extractVersion(file);
+                if (newver > ver.version) {
+                    console.log('Upgrading from:', ver.version, ' to:', newver);                    
+                    ver.version = newver;
+                    ver.desc = file;
+                    migr.Up();                
+                }
+            }
+        }
+    });
+}
+
+function extractVersion(file) : string {
+    var result;
+    result = path.basename(file);
+    result = result.slice(0, result.indexOf('.transformation.js'))
+    return result;
+}
+
+function fail(file, err) {
+    console.log('Migration - ', file, ' Failed!');
+    console.log('Error:', err);
+}
+
+function success(file) {
+    console.log('Migration - ' + file + ' OK');
 }
