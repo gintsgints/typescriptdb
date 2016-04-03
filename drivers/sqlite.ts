@@ -128,7 +128,7 @@ export class Driver extends DriverBase implements DriverInterface {
     CreateTable(model: Model, callback: Function) {
         var sql: string;
         sql = "CREATE TABLE " + model.getTableName() + " (";
-        sql = sql + model.getFields().join(',')
+        sql = sql + model.getFieldDefs().join(',')
         if (this.verbose) { console.log("SQL:", sql); }
         this.db.run(sql + " )", callback);
     };
@@ -136,7 +136,7 @@ export class Driver extends DriverBase implements DriverInterface {
         var sql: string;
         console.log();
         sql = "CREATE TABLE IF NOT EXISTS " + model.getTableName() + " (";
-        sql = sql + model.getFields().join(',')
+        sql = sql + model.getFieldDefs().join(',')
         if (this.verbose) { console.log("SQL:", sql); }
         this.db.run(sql + " )", callback);
     };
