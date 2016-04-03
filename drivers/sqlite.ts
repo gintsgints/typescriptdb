@@ -24,6 +24,9 @@ export class Driver extends DriverBase implements DriverInterface {
         if (typeof field === 'string') {
             return 'TEXT'
         }
+        if (typeof field === 'number') {
+            return 'REAL'
+        }
         return null;
     }
     
