@@ -20,11 +20,18 @@ export class Driver extends DriverBase implements DriverInterface {
         }
     }
     
-    Enclose(obj: Model, field, value): string {
-        if (typeof obj[field] === 'string') {
-            return DRIVER_STRINGTERM + value + DRIVER_STRINGTERM;
+    GetType(field: any): string {
+        if (typeof field === 'string') {
+            return 'TEXT'
+        }
+        return null;
+    }
+    
+    Enclose(field: any): string {
+        if (typeof field === 'string') {
+            return DRIVER_STRINGTERM + field + DRIVER_STRINGTERM;
         } else {
-            return value;
+            return field.toString();
         }
     }
         
@@ -35,7 +42,7 @@ export class Driver extends DriverBase implements DriverInterface {
         if (pks.length > 0) {
             var sql = "select " + obj.getFields().join(", ") + " FROM ";
             sql += obj.getTableName();
-            sql += ' where ' + pks[0] + ' = ' + this.Enclose(obj, pks[0], obj[pks[0]]);
+            sql += ' where ' + pks[0] + ' = ' + this.Enclose(obj[pks[0]]);
             if (this.verbose) { console.log('SQL: ', sql); }
             this.db.get(sql, function(err, result) {
                 if (result) {
@@ -89,13 +96,12 @@ export class Driver extends DriverBase implements DriverInterface {
     // Data functions    
     Update(model: Model, callback: Function):void {
         var sql: string;
-        var values = model.getValues();
+        var values = model.getSQLValues();
         var fields = [];
         var fieldvalues = [];
-        var myself = this;
         sql = 'update ' + model.getTableName() + ' set ';
         Object.keys(values).forEach(function (key) {
-            sql += key + '=' + myself.Enclose(model, key, values[key]) + ',';
+            sql += key + '=' + values[key] + ',';
         })
         sql = sql.slice(0, sql.length - 1);
 
@@ -105,13 +111,12 @@ export class Driver extends DriverBase implements DriverInterface {
     
     Insert(model: Model, callback: Function) {
         var sql: string;
-        var values = model.getValues();
+        var values = model.getSQLValues();
         var fields = [];
         var fieldvalues = [];
-        var myself = this;
         Object.keys(values).forEach(function (key) {
             fields.push(key);
-            fieldvalues.push(myself.Enclose(model, key, values[key]));
+            fieldvalues.push(values[key]);
         })
         sql = 'insert into ' + model.getTableName() + ' (' + fields.join(',') + ') ';
         sql += 'values (' + fieldvalues.join(',') + ')';

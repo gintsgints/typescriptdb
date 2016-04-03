@@ -53,6 +53,8 @@ export class DriverBase {
 
 // Interface for implementing drivers. All functions which need to implement is here.
 export interface DriverInterface {
+    GetType(field: any): string;
+    Enclose(field: any): string;
     CreateTable(model: Model, callback: Function):void;    
     CreateTableIgnore(model: Model, callback: Function):void;    
     DropTable(table_name: string, callback: Function): void;
@@ -100,6 +102,7 @@ export class Model {
         return result;
     }
     
+    // Get's array of all defined field names 
     getFields(): Array<string> {
         var result = [];
         var key: string = "";
@@ -114,6 +117,18 @@ export class Model {
         return result;
     }
     
+    // Get's array of all field definitions (for CreateTable)
+    getFieldDefs(): Array<string> {
+        var result = [];
+        var fields = this.getFields();
+        var myself = this;
+        fields.forEach(function(field) {
+            result.push(field + " " + myself.driver.GetType(myself[field]));
+        })
+        return result;
+    }
+    
+    // Return object with all field/value pairs
     getValues(): Object {
         var result = {};
         var fields = this.getFields();
@@ -121,6 +136,19 @@ export class Model {
         fields.forEach(function(field) {
             if (myself[field] !== undefined) {
                 result[field] = myself[field];
+            }
+        })
+        return result;
+    }
+    
+    // Return object with all field/value pairs where values are ready for SQL
+    getSQLValues(): Object {
+        var result = {};
+        var fields = this.getFields();
+        var myself = this;
+        fields.forEach(function(field) {
+            if (myself[field] !== undefined) {
+                result[field] = myself.driver.Enclose(myself[field]);
             }
         })
         return result;
