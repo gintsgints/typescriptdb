@@ -148,6 +148,12 @@ export class Driver extends DriverBase implements DriverInterface {
         var sql = 'DROP TABLE ' + tablename;
         if (this.verbose) { console.log("SQL:", sql); }
         this.db.run(sql, callback);
+    };
+    
+    AddColumn(model: Model, name: string, callback: Function) {
+        var sql = 'ALTER TABLE ' + model.getTableName() + ' ADD COLUMN ';
+        sql += model.getFieldDef(name);
+        this.db.run(sql, callback);
     }
     
 }

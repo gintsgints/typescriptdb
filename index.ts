@@ -55,14 +55,15 @@ export class DriverBase {
 export interface DriverInterface {
     GetType(field: any): string;
     Enclose(field: any): string;
-    CreateTable(model: Model, callback: Function):void;    
-    CreateTableIgnore(model: Model, callback: Function):void;    
-    DropTable(table_name: string, callback: Function): void;
     Find(obj:Model, callback: Function);
     Insert(obj:Model, callback: Function);
     Update(obj:Model, callback: Function);
     First(obj:Model, callback: Function);
     Last(obj:Model, callback: Function);
+    CreateTable(model: Model, callback: Function): void;    
+    CreateTableIgnore(model: Model, callback: Function): void;    
+    DropTable(table_name: string, callback: Function): void;
+    AddColumn(model: Model, name: string, callback: Function): void;
 }
 
 // Using driver you can  define database model
@@ -126,6 +127,11 @@ export class Model {
             result.push(field + " " + myself.driver.GetType(myself[field]));
         })
         return result;
+    }
+    
+    // Get's array of all field definitions (for CreateTable)
+    getFieldDef(name: string): string {
+        return name + " " + this.driver.GetType(this[name]);
     }
     
     // Return object with all field/value pairs
@@ -238,6 +244,10 @@ export class Migration {
     
     DropTable() {
         this.model.driver.DropTable(this.model.getTableName(), this.callback);
+    }
+    
+    AddColumn(name: string) {
+        this.model.driver.AddColumn(this.model, name, this.callback);
     }
     
     SetCallback(callback: Function) {
