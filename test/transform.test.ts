@@ -3,6 +3,8 @@ var expect = chai.expect; // we are using the "expect" style of Chai
 import {Model, Table, Field} from '../index';
 import {Driver} from '../drivers/sqlite';
 
+var settings = require('../../settings.' + process.env.NODE_ENV + '.json');
+
 @Table('item_table_name')
 class Item extends Model {
     @Field({ pk: true, caption: "Part No.", size: 9 })
@@ -24,7 +26,7 @@ class ItemWithCol extends Model {
     NewField: string;
 }
 
-var driver = new Driver();    
+var driver = new Driver(settings);    
 var record = new Item(driver);
 var record2 = new ItemWithCol(driver);
 

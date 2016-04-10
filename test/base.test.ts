@@ -3,6 +3,8 @@ var expect = chai.expect; // we are using the "expect" style of Chai
 import {Model, Table, Field} from '../index';
 import {Driver} from '../drivers/sqlite';
 
+var settings = require('../../settings.' + process.env.NODE_ENV + '.json');
+
 @Table('item_table_name')
 class Item extends Model {
     @Field({ pk: true, caption: "Part No.", size: 9 })
@@ -20,7 +22,7 @@ describe('Base object functionality', function() {
     //     expect(new Driver({verbose: true})).to.not.throw('good function');
     // })
     it('Field decorator should assign metadata to field variable', function() {
-        var driver = new Driver();    
+        var driver = new Driver(settings);    
         var record = new Item(driver);
 
         var test = Reflect.getMetadata("caption", record, "Partno");
@@ -28,7 +30,7 @@ describe('Base object functionality', function() {
         expect(test).to.equal('Part No.');
     })
     it('Property metadata should allow to get all fields, (even without value)', function() {
-        var driver = new Driver();    
+        var driver = new Driver(settings);    
         var record = new Item(driver);
         var fields = record.getFields();
         
@@ -36,7 +38,7 @@ describe('Base object functionality', function() {
         expect(fields[0]).to.equal('Partno');
     })
     it('getValues function should return default values and values assigned', function() {
-        var driver = new Driver();    
+        var driver = new Driver(settings);    
         var record = new Item(driver);
         var values = record.getValues();
         
@@ -47,7 +49,7 @@ describe('Base object functionality', function() {
         expect(values['Test']).to.equal("Assigned value");
     })
     it('Property metadata should be aiviable without property itself', function() {
-        var driver = new Driver();    
+        var driver = new Driver(settings);    
         var record = new Item(driver);
         var pkcount = record.getPrimaryKeys();
         

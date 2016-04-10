@@ -1,8 +1,6 @@
 import {Database} from "sqlite3";
 import {DriverInterface, DriverBase, Model} from "../index"
 
-var settings = require('../../settings.' + process.env.NODE_ENV + '.json');
-
 export const DRIVER_STRINGTERM = '"';
 
 export class Driver extends DriverBase implements DriverInterface {
@@ -10,13 +8,11 @@ export class Driver extends DriverBase implements DriverInterface {
     verbose: boolean = false;
 
     // Management functions
-    constructor(options?: Object) {
+    constructor(settings: Object) {
         super();
-        this.db = new Database(settings.connection);
-        if (!!options) {
-            if (options['verbose']) {
-                this.verbose = true;
-            }
+        this.db = new Database(settings['connection']);
+        if (settings['verbose']) {
+            this.verbose = true;
         }
     }
     
@@ -153,6 +149,13 @@ export class Driver extends DriverBase implements DriverInterface {
     AddColumn(model: Model, name: string, callback: Function) {
         var sql = 'ALTER TABLE ' + model.getTableName() + ' ADD COLUMN ';
         sql += model.getFieldDef(name);
+        this.db.run(sql, callback);
+    }
+    
+    DropColumn(model: Model, ColumnName: string, callback: Function) {
+        var sql = 'CREATE TABLE ' + model.getTableName() + '_table_to_dropcol_ as select * from ' + model.getTableName() + ';'
+        var sql = 'ALTER TABLE ' + model.getTableName() + ' DROP COLUMN ';
+        sql += ColumnName;
         this.db.run(sql, callback);
     }
     
