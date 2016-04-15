@@ -5,11 +5,11 @@ import {Model, Table, Field} from '../index';
 export class Item extends Model {
     @Field({ pk: true, caption: "Part No.", size: 9 })
     Partno: number = 0;
-    
+
     @Field({})
     Name: string;
 
     @Field({ caption: "In Stock", size: 2 })
     Instock: number = 0;
-    
+
 }
