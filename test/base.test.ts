@@ -9,50 +9,50 @@ var settings = require('../../settings.' + process.env.NODE_ENV + '.json');
 class Item extends Model {
     @Field({ pk: true, caption: "Part No.", size: 9 })
     Partno: string = "Default";
-    
+
     @Field({ caption: "In Stock", size: 2 })
     Instock: number = 0;
-    
-    @Field({ caption: "Field without value", size:1})
+
+    @Field({ caption: "Field without value", size: 1 })
     Test: string;
 }
 
-describe('Base object functionality', function() {
+describe('Base object functionality', function () {
     // it('Driver should allow to pass options while creation', function() {
     //     expect(new Driver({verbose: true})).to.not.throw('good function');
     // })
-    it('Field decorator should assign metadata to field variable', function() {
-        var driver = new Driver(settings);    
+    it('Field decorator should assign metadata to field variable', function () {
+        var driver = new Driver(settings);
         var record = new Item(driver);
 
         var test = Reflect.getMetadata("caption", record, "Partno");
-        
+
         expect(test).to.equal('Part No.');
     })
-    it('Property metadata should allow to get all fields, (even without value)', function() {
-        var driver = new Driver(settings);    
+    it('Property metadata should allow to get all fields, (even without value)', function () {
+        var driver = new Driver(settings);
         var record = new Item(driver);
         var fields = record.getFields();
-        
+
         expect(fields.length).to.equal(3);
         expect(fields[0]).to.equal('Partno');
     })
-    it('getValues function should return default values and values assigned', function() {
-        var driver = new Driver(settings);    
+    it('getValues function should return default values and values assigned', function () {
+        var driver = new Driver(settings);
         var record = new Item(driver);
         var values = record.getValues();
-        
+
         expect(values['Partno']).to.equal('Default');
 
         record.Test = "Assigned value";
         values = record.getValues();
         expect(values['Test']).to.equal("Assigned value");
     })
-    it('Property metadata should be aiviable without property itself', function() {
-        var driver = new Driver(settings);    
+    it('Property metadata should be aiviable without property itself', function () {
+        var driver = new Driver(settings);
         var record = new Item(driver);
         var pkcount = record.getPrimaryKeys();
-        
+
         expect(pkcount.length).to.equal(1);
     })
 })

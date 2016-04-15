@@ -9,7 +9,7 @@ class CreateTable extends Migration implements MigrationBase {
         this.CreateTable();
     }
     Down() {
-        this.DropTable();    
+        this.DropTable();
     }
 }
 

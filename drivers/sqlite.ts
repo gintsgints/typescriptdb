@@ -15,7 +15,7 @@ export class Driver extends DriverBase implements DriverInterface {
             this.verbose = true;
         }
     }
-    
+
     GetType(field: any): string {
         if (typeof field === 'string') {
             return 'TEXT'
@@ -25,7 +25,7 @@ export class Driver extends DriverBase implements DriverInterface {
         }
         return null;
     }
-    
+
     Enclose(field: any): string {
         if (typeof field === 'string') {
             return DRIVER_STRINGTERM + field + DRIVER_STRINGTERM;
@@ -33,28 +33,28 @@ export class Driver extends DriverBase implements DriverInterface {
             return field.toString();
         }
     }
-        
+
     // Object like functions
     Find(obj: Model, callback: Function) {
         var pks = obj.getPrimaryKeys();
-        if (this.verbose) { console.log("Primary keys:", pks); };  
+        if (this.verbose) { console.log("Primary keys:", pks); };
         if (pks.length > 0) {
             var sql = "select " + obj.getFields().join(", ") + " FROM ";
             sql += obj.getTableName();
             sql += ' where ' + pks[0] + ' = ' + this.Enclose(obj[pks[0]]);
             if (this.verbose) { console.log('SQL: ', sql); }
-            this.db.get(sql, function(err, result) {
+            this.db.get(sql, function (err, result) {
                 if (result) {
-                    callback(err, result);    
+                    callback(err, result);
                 } else {
                     callback(err, null);
-                }             
+                }
             });
         } else {
             callback('Primary key is not defined', null);
         }
     }
-    
+
     First(obj: Model, callback: Function) {
         var sql = "select " + obj.getFields().join(", ") + " from " + obj.getTableName();
         var pks = obj.getPrimaryKeys();
@@ -62,30 +62,30 @@ export class Driver extends DriverBase implements DriverInterface {
             sql += " order by " + pks[0];
         }
         sql += " limit 1 ";
-        if (this.verbose) {console.log('SQL: ', sql);}
-        this.db.get(sql, function(err, result) {
+        if (this.verbose) { console.log('SQL: ', sql); }
+        this.db.get(sql, function (err, result) {
             if (result) {
-                callback(err, result);    
+                callback(err, result);
             } else {
                 callback(err, null);
-            }             
+            }
         });
     }
 
     Last(obj: Model, callback: Function) {
         var pks = obj.getPrimaryKeys();
-        if (this.verbose) { console.log("Primary keys:", pks); };  
+        if (this.verbose) { console.log("Primary keys:", pks); };
         if (pks.length > 0) {
             var sql = "select " + obj.getFields().join(", ") + " FROM ";
             sql += obj.getTableName();
             sql += ' where ' + pks[0] + ' = (select max(' + pks[0] + ') from ' + obj.getTableName() + ')';
-            if (this.verbose) {console.log('SQL: ', sql);}
-            this.db.get(sql, function(err, result) {
+            if (this.verbose) { console.log('SQL: ', sql); }
+            this.db.get(sql, function (err, result) {
                 if (result) {
-                    callback(err, result);    
+                    callback(err, result);
                 } else {
                     callback(err, null);
-                }             
+                }
             });
         } else {
             callback('Primary key is not defined', null);
@@ -93,7 +93,7 @@ export class Driver extends DriverBase implements DriverInterface {
     }
 
     // Data functions    
-    Update(model: Model, callback: Function):void {
+    Update(model: Model, callback: Function): void {
         var sql: string;
         var values = model.getSQLValues();
         var fields = [];
@@ -107,7 +107,7 @@ export class Driver extends DriverBase implements DriverInterface {
         if (this.verbose) { console.log("SQL:", sql); }
         this.db.run(sql, callback);
     }
-    
+
     Insert(model: Model, callback: Function) {
         var sql: string;
         var values = model.getSQLValues();
@@ -122,7 +122,7 @@ export class Driver extends DriverBase implements DriverInterface {
         if (this.verbose) { console.log("SQL:", sql); }
         this.db.run(sql, callback);
     };
-    
+
     // Model modifications
     CreateTable(model: Model, callback: Function) {
         var sql: string;
@@ -139,24 +139,24 @@ export class Driver extends DriverBase implements DriverInterface {
         if (this.verbose) { console.log("SQL:", sql); }
         this.db.run(sql + " )", callback);
     };
-    
+
     DropTable(tablename: string, callback: Function) {
         var sql = 'DROP TABLE ' + tablename;
         if (this.verbose) { console.log("SQL:", sql); }
         this.db.run(sql, callback);
     };
-    
+
     AddColumn(model: Model, name: string, callback: Function) {
         var sql = 'ALTER TABLE ' + model.getTableName() + ' ADD COLUMN ';
         sql += model.getFieldDef(name);
         this.db.run(sql, callback);
     }
-    
+
     DropColumn(model: Model, ColumnName: string, callback: Function) {
         var sql = 'CREATE TABLE ' + model.getTableName() + '_table_to_dropcol_ as select * from ' + model.getTableName() + ';'
         var sql = 'ALTER TABLE ' + model.getTableName() + ' DROP COLUMN ';
         sql += ColumnName;
         this.db.run(sql, callback);
     }
-    
+
 }

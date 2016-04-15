@@ -6,7 +6,7 @@ import {Model, Table, Field} from '../index';
 export class SchemaVersion extends Model {
     @Field({ pk: true, size: 9 })
     version: string = '';
-    
+
     @Field({ caption: "Description", size: 50 })
     desc: string;
 
