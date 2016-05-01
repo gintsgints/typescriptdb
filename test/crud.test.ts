@@ -1,8 +1,8 @@
 var chai = require('chai');
 var expect = chai.expect; // we are using the "expect" style of Chai
 import {Model, Table, Field} from '../index';
-import {Driver} from '../drivers/sqlite';
 
+var Driver = require('../drivers/' + process.env.DIALECT).Driver;
 var settings = require('../../settings.' + process.env.NODE_ENV + '.json');
 
 @Table('item_table_name')

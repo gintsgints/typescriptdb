@@ -7,7 +7,10 @@
     "example": "example"
   },
   "scripts": {
-    "test": "npm run build && node ./node_modules/mocha/bin/mocha ./built/test",
+    "test": "npm run unit-test-sqlite",
+    "unit-test-sqlite": "DIALECT=sqlite npm run unit-test",
+    "unit-test-oracle": "set DIALECT=oracle&& npm run unit-test",
+    "unit-test": "npm run build && node ./node_modules/mocha/bin/mocha ./built/test",
     "build": "npm run build:tsc",
     "build:tsc": "node ./node_modules/typescript/bin/tsc",
     "build:watch": "node ./node_modules/typescript/bin/tsc -w"
