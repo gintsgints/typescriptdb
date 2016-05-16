@@ -227,27 +227,22 @@ export interface MigrationBase {
 
 // --- Migration definitions
 export class Migration {
-    model: Model;
     callback: Function;
 
-    constructor(model: Model) {
-        this.model = model;    
-    }
-    
-    Insert() {
-        this.model.driver.Insert(this.model, this.callback);    
+    Insert(model: Model) {
+        model.driver.Insert(model, this.callback);    
     }
         
-    CreateTable() {
-        this.model.driver.CreateTable(this.model, this.callback);    
+    CreateTable(model: Model) {
+        model.driver.CreateTable(model, this.callback);    
     }
     
-    DropTable() {
-        this.model.driver.DropTable(this.model.getTableName(), this.callback);
+    DropTable(model: Model) {
+        model.driver.DropTable(model.getTableName(), this.callback);
     }
     
-    AddColumn(name: string) {
-        this.model.driver.AddColumn(this.model, name, this.callback);
+    AddColumn(model: Model, name: string) {
+        model.driver.AddColumn(model, name, this.callback);
     }
     
     SetCallback(callback: Function) {

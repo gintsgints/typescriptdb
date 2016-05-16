@@ -4,15 +4,16 @@ import {Driver} from '../../drivers/sqlite';
 
 var settings = require('../../settings.' + process.env.NODE_ENV + '.json');
 
+var driver = new Driver(settings);
+var item = new Item(driver);
+
 class CreateTable extends Migration implements MigrationBase {
     Up() {
-        this.CreateTable();
+        this.CreateTable(item);
     }
     Down() {
-        this.DropTable();
+        this.DropTable(item);
     }
 }
 
-var driver = new Driver(settings);
-var item = new Item(driver);
-export var migration = new CreateTable(item);
+export var migration = new CreateTable();
