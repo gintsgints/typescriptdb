@@ -57,40 +57,32 @@ function migrate(file: string) {
             fail(file, err);
         } else {
             ver.state = 'ok'
-            ver.Save(function (err, result) {
-                if (err) {
-                    console.log('saving... version')
-                    fail(file, err);
-                } else {
-                    success(file);
-                }
+            ver.Save().then(function (result) {
+                success(file);
+            }).catch(function(err) {
+                fail(file, err);
             })
         };
     }
 
-    // Then we do migration itself
-    migr.SetCallback(callback);
-
-    ver.Last(function (err, result) {
-        if (err) {
-            fail(file, err);
+    ver.Last().then(function (result) {
+        if (ver.version === null) {
+            console.log("null result")
+        }
+        console.log('Last version record for: ', ver.version);
+        if (process.argv[2] === 'down') {
+            migr.Down();
         } else {
-            if (ver.version === null) {
-                console.log("null result")
-            }
-            console.log('Last version record for: ', ver.version);
-            if (process.argv[2] === 'down') {
-                migr.Down();
-            } else {
-                var newver = extractVersion(file);
-                if (newver > ver.version) {
-                    console.log('Upgrading from:', ver.version, ' to:', newver);
-                    ver.version = newver;
-                    ver.desc = file;
-                    migr.Up();
-                }
+            var newver = extractVersion(file);
+            if (newver > ver.version) {
+                console.log('Upgrading from:', ver.version, ' to:', newver);
+                ver.version = newver;
+                ver.desc = file;
+                migr.Up();
             }
         }
+    }).catch(function(err) {
+        fail(file, err);
     });
 }
 

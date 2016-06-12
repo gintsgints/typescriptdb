@@ -35,128 +35,191 @@ export class Driver extends DriverBase implements DriverInterface {
     }
 
     // Object like functions
-    Find(obj: Model, callback: Function) {
-        var pks = obj.getPrimaryKeys();
-        if (this.verbose) { console.log("Primary keys:", pks); };
-        if (pks.length > 0) {
-            var sql = "select " + obj.getFields().join(", ") + " FROM ";
-            sql += obj.getTableName();
-            sql += ' where ' + pks[0] + ' = ' + this.Enclose(obj[pks[0]]);
-            if (this.verbose) { console.log('SQL: ', sql); }
-            this.db.get(sql, function (err, result) {
-                if (result) {
-                    callback(err, result);
-                } else {
-                    callback(err, null);
-                }
-            });
-        } else {
-            callback('Primary key is not defined', null);
-        }
-    }
-
-    First(obj: Model, callback: Function) {
-        var sql = "select " + obj.getFields().join(", ") + " from " + obj.getTableName();
-        var pks = obj.getPrimaryKeys();
-        if (pks.length > 0) {
-            sql += " order by " + pks[0];
-        }
-        sql += " limit 1 ";
-        if (this.verbose) { console.log('SQL: ', sql); }
-        this.db.get(sql, function (err, result) {
-            if (result) {
-                callback(err, result);
+    Find(obj: Model) {
+        return new Promise(function(resolve, reject) {
+            var pks = obj.getPrimaryKeys();
+            if (this.verbose) { console.log("Primary keys:", pks); };
+            if (pks.length > 0) {
+                var sql = "select " + obj.getFields().join(", ") + " FROM ";
+                sql += obj.getTableName();
+                sql += ' where ' + pks[0] + ' = ' + this.Enclose(obj[pks[0]]);
+                if (this.verbose) { console.log('SQL: ', sql); }
+                this.db.get(sql, function (err, result) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                    }
+                });
             } else {
-                callback(err, null);
+                reject('Primary key is not defined');
             }
         });
     }
 
-    Last(obj: Model, callback: Function) {
-        var pks = obj.getPrimaryKeys();
-        if (this.verbose) { console.log("Primary keys:", pks); };
-        if (pks.length > 0) {
-            var sql = "select " + obj.getFields().join(", ") + " FROM ";
-            sql += obj.getTableName();
-            sql += ' where ' + pks[0] + ' = (select max(' + pks[0] + ') from ' + obj.getTableName() + ')';
+    First(obj: Model) {
+        return new Promise(function(resolve, reject) {
+            var sql = "select " + obj.getFields().join(", ") + " from " + obj.getTableName();
+            var pks = obj.getPrimaryKeys();
+            if (pks.length > 0) {
+                sql += " order by " + pks[0];
+            }
+            sql += " limit 1 ";
             if (this.verbose) { console.log('SQL: ', sql); }
             this.db.get(sql, function (err, result) {
-                if (result) {
-                    callback(err, result);
+                if (err) {
+                    reject(err);
                 } else {
-                    callback(err, null);
+                    resolve(result);
                 }
             });
-        } else {
-            callback('Primary key is not defined', null);
-        }
+        });
     }
 
-    // Data functions    
-    Update(model: Model, callback: Function): void {
-        var sql: string;
-        var values = model.getSQLValues();
-        var fields = [];
-        var fieldvalues = [];
-        sql = 'update ' + model.getTableName() + ' set ';
-        Object.keys(values).forEach(function (key) {
-            sql += key + '=' + values[key] + ',';
-        })
-        sql = sql.slice(0, sql.length - 1);
-
-        if (this.verbose) { console.log("SQL:", sql); }
-        this.db.run(sql, callback);
+    Last(obj: Model) {
+        return new Promise(function(resolve, reject) {
+            var pks = obj.getPrimaryKeys();
+            if (this.verbose) { console.log("Primary keys:", pks); };
+            if (pks.length > 0) {
+                var sql = "select " + obj.getFields().join(", ") + " FROM ";
+                sql += obj.getTableName();
+                sql += ' where ' + pks[0] + ' = (select max(' + pks[0] + ') from ' + obj.getTableName() + ')';
+                if (this.verbose) { console.log('SQL: ', sql); }
+                this.db.get(sql, function (err, result) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                    }
+                });
+            } else {
+                reject('Primary key is not defined');
+            }
+        });
     }
 
-    Insert(model: Model, callback: Function) {
-        var sql: string;
-        var values = model.getSQLValues();
-        var fields = [];
-        var fieldvalues = [];
-        Object.keys(values).forEach(function (key) {
-            fields.push(key);
-            fieldvalues.push(values[key]);
-        })
-        sql = 'insert into ' + model.getTableName() + ' (' + fields.join(',') + ') ';
-        sql += 'values (' + fieldvalues.join(',') + ')';
-        if (this.verbose) { console.log("SQL:", sql); }
-        this.db.run(sql, callback);
+    // Data functions
+    Update(model: Model) {
+        return new Promise(function(resolve, reject) {
+            var sql: string;
+            var values = model.getSQLValues();
+            var fields = [];
+            var fieldvalues = [];
+            sql = 'update ' + model.getTableName() + ' set ';
+            Object.keys(values).forEach(function (key) {
+                sql += key + '=' + values[key] + ',';
+            })
+            sql = sql.slice(0, sql.length - 1);
+
+            if (this.verbose) { console.log("SQL:", sql); }
+            this.db.run(sql, function(err, result) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+    }
+
+    Insert(model: Model) {
+        return new Promise(function(resolve, reject) {
+            var sql: string;
+            var values = model.getSQLValues();
+            var fields = [];
+            var fieldvalues = [];
+            Object.keys(values).forEach(function (key) {
+                fields.push(key);
+                fieldvalues.push(values[key]);
+            })
+            sql = 'insert into ' + model.getTableName() + ' (' + fields.join(',') + ') ';
+            sql += 'values (' + fieldvalues.join(',') + ')';
+            if (this.verbose) { console.log("SQL:", sql); }
+            this.db.run(sql, function(err, result) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(result);
+                }
+            });
+        });
     };
 
     // Model modifications
-    CreateTable(model: Model, callback: Function) {
-        var sql: string;
-        sql = "CREATE TABLE " + model.getTableName() + " (";
-        sql = sql + model.getFieldDefs().join(',')
-        if (this.verbose) { console.log("SQL:", sql); }
-        this.db.run(sql + " )", callback);
-    };
-    CreateTableIgnore(model: Model, callback: Function) {
-        var sql: string;
-        console.log();
-        sql = "CREATE TABLE IF NOT EXISTS " + model.getTableName() + " (";
-        sql = sql + model.getFieldDefs().join(',')
-        if (this.verbose) { console.log("SQL:", sql); }
-        this.db.run(sql + " )", callback);
-    };
-
-    DropTable(tablename: string, callback: Function) {
-        var sql = 'DROP TABLE ' + tablename;
-        if (this.verbose) { console.log("SQL:", sql); }
-        this.db.run(sql, callback);
+    CreateTable(model: Model): Promise<any> {
+        return new Promise(function(resolve, reject) {
+            var sql: string;
+            sql = "CREATE TABLE " + model.getTableName() + " (";
+            sql = sql + model.getFieldDefs().join(',')
+            if (this.verbose) { console.log("SQL:", sql); }
+            this.db.run(sql + " )", function(err, result){
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(result);
+            });
+        })
     };
 
-    AddColumn(model: Model, name: string, callback: Function) {
-        var sql = 'ALTER TABLE ' + model.getTableName() + ' ADD COLUMN ';
-        sql += model.getFieldDef(name);
-        this.db.run(sql, callback);
+    CreateTableIgnore(model: Model) {
+        return new Promise(function(resolve, reject) {
+            var sql: string;
+            console.log();
+            sql = "CREATE TABLE IF NOT EXISTS " + model.getTableName() + " (";
+            sql = sql + model.getFieldDefs().join(',')
+            if (this.verbose) { console.log("SQL:", sql); }
+            this.db.run(sql + " )", function(err, result){
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(result);
+            });
+        });
+    };
+
+    DropTable(tablename: string) {
+        return new Promise(function(resolve, reject) {
+            var sql = 'DROP TABLE ' + tablename;
+            if (this.verbose) { console.log("SQL:", sql); }
+            this.db.run(sql, function(err, result){
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(result);
+            });
+        });
+    };
+
+    AddColumn(model: Model, name: string) {
+        return new Promise(function(resolve, reject) {
+            var sql = 'ALTER TABLE ' + model.getTableName() + ' ADD COLUMN ';
+            sql += model.getFieldDef(name);
+            this.db.run(sql, function(err, result){
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(result);
+            });
+        });
     }
 
-    DropColumn(model: Model, ColumnName: string, callback: Function) {
-        var sql = 'CREATE TABLE ' + model.getTableName() + '_table_to_dropcol_ as select * from ' + model.getTableName() + ';'
-        var sql = 'ALTER TABLE ' + model.getTableName() + ' DROP COLUMN ';
-        sql += ColumnName;
-        this.db.run(sql, callback);
+    DropColumn(model: Model, ColumnName: string) {
+        return new Promise(function(resolve, reject) {
+            var sql = 'CREATE TABLE ' + model.getTableName() + '_table_to_dropcol_ as select * from ' + model.getTableName() + ';'
+            var sql = 'ALTER TABLE ' + model.getTableName() + ' DROP COLUMN ';
+            sql += ColumnName;
+            this.db.run(sql, function(err, result){
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve(result);
+            });
+        });
     }
 
 }

@@ -55,26 +55,26 @@ export class DriverBase {
 export interface DriverInterface {
     GetType(field: any): string;
     Enclose(field: any): string;
-    Find(obj:Model, callback: Function);
-    Insert(obj:Model, callback: Function);
-    Update(obj:Model, callback: Function);
-    First(obj:Model, callback: Function);
-    Last(obj:Model, callback: Function);
-    CreateTable(model: Model, callback: Function): void;    
-    CreateTableIgnore(model: Model, callback: Function): void;    
-    DropTable(table_name: string, callback: Function): void;
-    AddColumn(model: Model, name: string, callback: Function): void;
+    Find(obj:Model): Promise<any>;
+    Insert(obj:Model): Promise<any>;
+    Update(obj:Model): Promise<any>;
+    First(obj:Model): Promise<any>;
+    Last(obj:Model): Promise<any>;
+    CreateTable(model: Model): Promise<any>;
+    CreateTableIgnore(model: Model): Promise<any>;
+    DropTable(table_name: string): Promise<any>;
+    AddColumn(model: Model, name: string): Promise<any>;
 }
 
 // Using driver you can  define database model
 export class Model {
     driver: DriverInterface;
     table_name: string;
-    
+
     constructor(driver: DriverInterface) {
-        this.driver = driver;    
+        this.driver = driver;
     }
-    
+
     // Helper functions
     assignData(result: Object):void {
         var myself = this;
@@ -82,12 +82,12 @@ export class Model {
             myself[key] = result[key];
         });
     }
-    
+
     // Metadata helper functions
     getTableName(): string {
         return Reflect.getMetadata(META_TABLENAME, this); 
     }
-    
+
     getFieldsWithMeta(metadataKey: string): Array<string> {
         var result = [];
         var key: string = "";
@@ -102,22 +102,22 @@ export class Model {
 
         return result;
     }
-    
-    // Get's array of all defined field names 
+
+    // Get's array of all defined field names
     getFields(): Array<string> {
         var result = [];
         var key: string = "";
         var keys = Reflect.getMetadataKeys(this);
         keys.forEach(function(key: string) {
             if (key.indexOf(META_FIELD_PREF) !== -1) {
-                key = key.slice(key.indexOf(META_FIELD_PREF) + 6); 
-                result.push(key);   
+                key = key.slice(key.indexOf(META_FIELD_PREF) + 6);
+                result.push(key);
             }
         });
 
         return result;
     }
-    
+
     // Get's array of all field definitions (for CreateTable)
     getFieldDefs(): Array<string> {
         var result = [];
@@ -128,12 +128,12 @@ export class Model {
         })
         return result;
     }
-    
+
     // Get's array of all field definitions (for CreateTable)
     getFieldDef(name: string): string {
         return name + " " + this.driver.GetType(this[name]);
     }
-    
+
     // Return object with all field/value pairs
     getValues(): Object {
         var result = {};
@@ -146,7 +146,7 @@ export class Model {
         })
         return result;
     }
-    
+
     // Return object with all field/value pairs where values are ready for SQL
     getSQLValues(): Object {
         var result = {};
@@ -159,64 +159,50 @@ export class Model {
         })
         return result;
     }
-    
+
     getPrimaryKeys(): Array<string> {
         return this.getFieldsWithMeta(META_PK);
     }
-    
+
     getProperties(field: string): Array<string> {
         return Reflect.getMetadataKeys(this, field);
     }
 
     // Data manipulation
-    Find(callback: Function) {
-        var myself = this;
-        this.driver.Find(this, function(err, result) {
-            if (result) {
-                myself.assignData(result);
-            }
-            callback(err, result);
+    Find(): Promise<any> {
+        return this.driver.Find(this).then(function(result) {
+            return this.assignData(result);
         });
     }
-    
-    First(callback: Function) {
-        var myself = this;
-        this.driver.First(this, function(err, result) {
-            if (result) {
-                myself.assignData(result);
-            }
-            callback(err, result);
+
+    First(): Promise<any> {
+        return this.driver.First(this).then(function(result) {
+            return this.assignData(result);
         });
     }
-    
-    Last(callback: Function) {
-        var myself = this;
-        this.driver.Last(this, function(err, result) {
-            if (result) {
-                myself.assignData(result);
-            }
-            callback(err, result);
+
+    Last(): Promise<any> {
+        return this.driver.Last(this).then(function(result) {
+            return this.assignData(result);
         });
     }
-    
-    Save(callback: Function): void {
-        var pk = this.getPrimaryKeys();
-        var myself = this;
-        if (this[pk[0]]) {
-            this.Find(function(err, result) {
-                if (err) {
-                    callback(err, null);
-                } else {
+
+    Save(): Promise<any> {
+        return new Promise(function(resolve, reject) {
+            var pk = this.getPrimaryKeys();
+            if (this[pk[0]]) {
+                return this.Find().then(function(result) {
                     if (result) {
-                        myself.driver.Update(myself, callback);    
+                        return this.driver.Update(this);
                     } else {
-                        myself.driver.Insert(myself, callback);
+                        return this.driver.Insert(this);
                     }
-                }
-            })            
-        } else {
-            callback("No primary key provided", null);
-        }
+                });
+            } else {
+                reject("No primary key provided");
+            }
+
+        });
     }
 }
 
@@ -227,25 +213,19 @@ export interface MigrationBase {
 
 // --- Migration definitions
 export class Migration {
-    callback: Function;
+    Insert(model: Model): Promise<any> {
+        return model.driver.Insert(model);
+    }
 
-    Insert(model: Model) {
-        model.driver.Insert(model, this.callback);    
+    CreateTable(model: Model): Promise<any> {
+        return model.driver.CreateTable(model);
     }
-        
-    CreateTable(model: Model) {
-        model.driver.CreateTable(model, this.callback);    
+
+    DropTable(model: Model): Promise<any> {
+        return model.driver.DropTable(model.getTableName());
     }
-    
-    DropTable(model: Model) {
-        model.driver.DropTable(model.getTableName(), this.callback);
-    }
-    
-    AddColumn(model: Model, name: string) {
-        model.driver.AddColumn(model, name, this.callback);
-    }
-    
-    SetCallback(callback: Function) {
-        this.callback = callback;
+
+    AddColumn(model: Model, name: string): Promise<any> {
+        return model.driver.AddColumn(model, name);
     }
 }
