@@ -1,6 +1,9 @@
 # typescriptdb [![Build Status](https://travis-ci.org/gintsgints/typescriptdb.svg?branch=master)](https://travis-ci.org/gintsgints/typescriptdb)
 Database backend for node, powered by typescript.
 
+# Project closed in favor to existing good alternative
+Take look here - https://typeorm.github.io/
+
 # Objectives
 * Typescript class based definitions of database objects
 * Migrations for database changes (migrations should support Up/Down migrations)
